@@ -1,0 +1,67 @@
+label: "Realsense"
+id: 412eab8e4058621f7036b5e765dfe812
+cameras:
+- camera:
+    label: cam0
+    id: 0
+    line-delay-nanoseconds: 0
+    image_height: 480
+    image_width: 640
+    depth_min: 0.1
+    depth_max: 3.0
+    depth_scale: 1000.0
+    type: pinhole
+
+    intrinsics:
+      cols: 1
+      rows: 4
+      data: [389.35418181, 389.65571074, 317.9848484, 240.61724259]
+    distortion:
+      type: radial-tangential 
+      parameters:
+        cols: 1
+        rows: 4
+        data: [0.00357968, -0.0013319, 0.00019311, 0.00046366]
+  T_B_C:
+    cols: 4
+    rows: 4
+    data: [0.99997777, -0.00221207,  0.00629032, -0.02879886,
+           0.00225060,  0.99997872, -0.00612353,  0.00329531,
+          -0.00627664,  0.00613755,  0.99996147,  0.01435885,
+           0.0,         0.0,         0.0,         1.0        ]
+
+imu_params:
+  delay_imu_cam: 0.0
+  max_imu_delta_t: 0.01
+  acc_max: 176.0
+  omega_max: 17
+  sigma_acc_c: 0.1
+  sigma_omega_c: 0.01
+  sigma_acc_bias_c: 0.001
+  sigma_omega_bias_c: 0.0001
+  sigma_integration: 0.0
+  g: 9.8082
+  imu_rate: 800
+
+imu_initialization:
+  velocity: [0.0, 0, 0.0]
+  omega_bias: [0.0, 0, 0.0]
+  acc_bias: [0.0, 0.0, 0.0]
+  velocity_sigma: 2.0
+  omega_bias_sigma: 0.01
+  acc_bias_sigma: 0.1
+
+
+odometry_params:
+  delay_imu_odom: 0.0
+  max_odom_delta_t: 0.0
+
+  linear_velocity_n: 0.05
+  angular_velocity_n: 0.05
+  T_B_O:
+    cols: 4
+    rows: 4
+    data: [0.098,  -0.995, -0.028, -0.026,
+           0.018,  0.030,  -0.999,  0.260,
+           0.996,  0.097,  0.021,  -0.140,
+           0.0,    0.0,    0.0,     1.0]

@@ -1,0 +1,31 @@
+<!-- Launch File for running svo with ceres backend from bag-file -->
+<launch>
+
+  <arg name="type" default="vio"/>
+
+  <arg name="calib_file" default="$(find svo_ros)/param/calib/dog_d435i/dog_d435i_stereo_pinhole_640.yaml"/>
+  <!-- <arg name="calib_file" default="$(find svo_ros)/param/calib/tum/tum_stereo_pinhole_equi.yaml"/> -->
+
+  <arg name="config_file" default="$(find svo_ros)/param/dog_d435i_$(arg type)_stereo.yaml"/>
+
+  <!-- SVO node -->
+  <node pkg="svo_ros" type="svo_node" name="svo" clear_params="true" output="screen" args="--v=0">
+
+    <!-- Camera topic to subscribe to -->
+    <param name="cam0_topic" value="/camera/infra1/image_rect_raw" type="str" />
+    <param name="cam1_topic" value="/camera/infra2/image_rect_raw" type="str" />
+	
+    <!-- Imu topic to subscribe to -->
+    <param name="imu_topic" value="/camera/imu" type="str" />
+
+    <!-- Camera calibration file -->
+    <param name="calib_file" value="$(arg calib_file)" />
+
+    <!-- Config file -->
+    <param name="config_file" value="$(arg config_file)" />
+
+  </node>
+
+  <node name="vis" pkg="rviz" type="rviz" args=" -d $(find svo_ros)/rviz_config_vio.rviz" />
+
+</launch>

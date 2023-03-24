@@ -1,0 +1,74 @@
+label: "MiSense"
+id: 412eab8e4058621f7036b5e765dfe812
+cameras:
+- camera:
+    label: cam0
+    id: 54812562fa109c40fe90b29a59dd7798
+    line-delay-nanoseconds: 0
+    image_height: 480
+    image_width: 640
+    type: mei
+    intrinsics:
+      cols: 1
+      rows: 5
+      data: [795.4378102148482, 795.4902196056823, 323.4677177252056, 242.80520141477416, 1.8703987257162222]
+    distortion:
+      type: radial-tangential  
+      parameters:
+        cols: 1
+        rows: 4
+        data: [0.01927622046496341, -0.02914534837871796, 0.0018482961107705602, -0.0015647621998930413]
+  T_B_C:
+    cols: 4
+    rows: 4
+    data: [1.0, 0.0, 0.0, 0.0,
+           0.0, 1.0, 0.0, 0.0,
+           0.0, 0.0, 1.0, 0.0,
+           0.0, 0.0, 0.0, 1.0]
+- camera:
+    label: cam1
+    id: 54812562fa109c40fe90b29a59dd7723
+    line-delay-nanoseconds: 0
+    image_height: 480
+    image_width: 640
+    type: mei
+
+    intrinsics:
+      cols: 1
+      rows: 5
+      data: [784.9623256056742, 784.5529321939217, 325.24556200845313, 241.15871787621367,1.829778176796484]
+    distortion:
+      type: radial-tangential  
+      parameters:
+        cols: 1
+        rows: 4
+        data: [0.01301884074875156, -0.15600395961650243,0.001685174405526668, 0.0017206702919519703]
+  T_B_C:
+    cols: 4
+    rows: 4
+    data: [ 0.999945636579496, -0.00669006215361911, -0.00799793435918406, 0.0796567294100224,
+            0.00670773815969204, 0.999975115061388,  0.00218529328746738, 0.000479706380123714,
+            0.00798311558316144, -0.00223882253694928, 0.999965628178909, 0.000703045411087496,
+            0,  0, 0, 1.0]
+
+imu_params:
+  delay_imu_cam: 0.0
+  max_imu_delta_t: 0.01
+  acc_max: 176.0
+  omega_max: 17
+  sigma_omega_c: 12.0e-4
+  sigma_acc_c: 8.0e-3
+  sigma_omega_bias_c: 0.03
+  sigma_acc_bias_c: 0.1
+  sigma_integration: 0.0
+  g: 9.8082
+  imu_rate: 800
+
+imu_initialization:
+  velocity: [0.0, 0, 0.0]
+  omega_bias: [0.0, 0, 0.0]
+  acc_bias: [0.0, 0.0, 0.0]
+  velocity_sigma: 2.0
+  omega_bias_sigma: 0.01
+  acc_bias_sigma: 0.1
+

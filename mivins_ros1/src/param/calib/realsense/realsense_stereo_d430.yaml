@@ -1,0 +1,96 @@
+label: "Realsense"
+id: 412eab8e4058621f7036b5e765dfe812
+cameras:
+- camera:
+    label: cam0
+    id: 0
+    line-delay-nanoseconds: 0
+    image_height: 480
+    image_width: 640
+    type: pinhole
+
+    intrinsics:
+      cols: 1
+      rows: 4
+      data: [389.08851991207564, 389.11726049919525, 320.5093417015909, 234.36863244363235]
+    distortion:
+      type: radial-tangential 
+      parameters:
+        cols: 1
+        rows: 4
+        data: [0.0035460759329630285, -0.00723735880637989, 6.470704324073325e-05, 0.0006015376311618627]
+  T_B_C:
+    cols: 4
+    rows: 4
+    data: [-0.00783808,    0.191963,   -0.981371,  -0.0320048,
+             -0.999963,  0.00197277,  0.00837246,    0.033321,
+            0.00354322,      0.9814,     0.19194,   0.0152313,
+                   0.0,         0.0,         0.0,         1.0]
+- camera:
+    label: cam1
+    id: 1
+    line-delay-nanoseconds: 0
+    image_height: 480
+    image_width: 640
+    type: pinhole
+
+    intrinsics:
+      cols: 1
+      rows: 4
+      data: [390.86504463148316, 390.95089744204654, 319.67365129047533, 234.6603624386035]
+      
+    distortion:
+      type: radial-tangential
+      parameters:
+        cols: 1
+        rows: 4
+        data: [0.0009369902688884334, -0.005034950207328506, 0.0001687000689158226, 0.0006865660071115501]
+  T_B_C:
+    cols: 4
+    rows: 4
+    data: [-0.00969911,     0.19196,   -0.981355,  -0.0323472,
+             -0.999946,  0.00175101,   0.0102254,  -0.0167794,
+            0.00368123,    0.981401,    0.191933,   0.0153978,
+                   0.0,         0.0,         0.0,         1.0]
+
+imu_params:
+  delay_imu_cam: 0.0
+  max_imu_delta_t: 0.01
+  acc_max: 176.0
+  omega_max: 17
+  sigma_acc_c: 0.5
+  sigma_omega_c: 0.01
+  sigma_acc_bias_c: 0.001
+  sigma_omega_bias_c: 0.0001
+  sigma_integration: 0.0
+  g: 9.8082
+  imu_rate: 800
+
+imu_initialization:
+  velocity: [0.0, 0, 0.0]
+  omega_bias: [0.0, 0, 0.0]
+  acc_bias: [0.0, 0.0, 0.0]
+  velocity_sigma: 2.0
+  omega_bias_sigma: 0.01
+  acc_bias_sigma: 0.1
+
+odometry_params:
+
+  delay_odom: 0.0
+  max_odom_delta_t: 0.0
+
+  linear_velocity_n: 0.2
+  angular_velocity_n: 0.1
+
+  vel_scale: [1.0, 1.0, 1.0]
+  gyr_scale: [1.0, 1.0, 1.0]
+
+  T_B_O:
+    cols: 4
+    rows: 4
+    data: [-0.99983572, -0.00532686,  0.01732508,  0.22840236,
+           -0.00553332,  0.99991399, -0.01189064,  0.00771002,
+           -0.01726025, -0.01198455, -0.9997792,   0.1382501,
+              0.,          0.,          0.,          1.        ]
+
+          

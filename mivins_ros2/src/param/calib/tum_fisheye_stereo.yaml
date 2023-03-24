@@ -1,0 +1,74 @@
+label: "TUM"
+id: 412eab8e4058621f7036b5e765dfe812
+cameras:
+- camera:
+    label: cam0
+    id: 54812562fa109c40fe90b29a59dd7798
+    line-delay-nanoseconds: 0
+    image_height: 512
+    image_width: 512
+    type: mei
+    intrinsics:
+      cols: 1
+      rows: 5
+      data: [533.340727445877, 533.2556495307942, 254.64689387916482, 256.4835490935692, 1.7921879013]
+    distortion:
+      type: radial-tangential  
+      parameters:
+        cols: 1
+        rows: 4
+        data: [-0.05972430882700243, 0.17468739202093328, 0.000737218969875311, 0.000574074894976456]
+  T_B_C:
+    cols: 4
+    rows: 4
+    data: [-0.99954072,  0.00741901, -0.02938199,  0.04644611,                
+0.02910045, -0.03556579, -0.99894356, -0.07105542,                
+-0.00845616, -0.9993398,   0.03533356, -0.04342594,                
+0.0, 0.0, 0.0, 1.0]
+- camera:
+    label: cam1
+    id: 54812562fa109c40fe90b29a59dd7723
+    line-delay-nanoseconds: 0
+    image_height: 512
+    image_width: 512
+    type: mei
+
+    intrinsics:
+      cols: 1
+      rows: 5
+      data: [520.2546241208013, 520.1799003708908, 252.24978846121377, 254.15045097300418, 1.73241756065]
+    distortion:
+      type: radial-tangential  
+      parameters:
+        cols: 1
+        rows: 4
+        data: [-0.07693518083211431, 0.12590335598238764, 0.0016421936053305271, 0.0006230553630283544]
+  T_B_C:
+    cols: 4
+    rows: 4
+    data: [-0.99953336,  0.00802045, -0.02947447, -0.054498,
+0.02956376,  0.01125166, -0.99949957, -0.06910442,
+-0.0076848,  -0.99990453, -0.01148352, -0.04518668, 
+0.0, 0.0, 0.0, 1.0]
+
+imu_params:
+  delay_imu_cam: 0.0
+  max_imu_delta_t: 0.01
+  acc_max: 176.0
+  omega_max: 17
+  sigma_omega_c: 12.0e-4
+  sigma_acc_c: 8.0e-3
+  sigma_omega_bias_c: 0.03
+  sigma_acc_bias_c: 0.1
+  sigma_integration: 0.0
+  g: 9.8082
+  imu_rate: 200
+
+imu_initialization:
+  velocity: [0.0, 0, 0.0]
+  omega_bias: [0.0, 0, 0.0]
+  acc_bias: [0.0, 0.0, 0.0]
+  velocity_sigma: 2.0
+  omega_bias_sigma: 0.01
+  acc_bias_sigma: 0.1
+
