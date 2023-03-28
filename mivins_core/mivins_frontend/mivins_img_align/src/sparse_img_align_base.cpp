@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,13 +77,13 @@ namespace mivins
             state_new.alpha = state_old.alpha - dx(6);
             state_new.beta = state_old.beta - exp(-state_new.alpha) * dx(7);
             //std::cout << "dx:" << dx(6) << "," << dx(7) << ";" << state_new.alpha << "," << state_new.beta << std::endl;
-            SVO_DEBUG_STREAM("dx:" << dx(6) << "," << dx(7) << ";" << state_new.alpha << "," << state_new.beta);
+            LOG_DEBUG_STREAM("dx:" << dx(6) << "," << dx(7) << ";" << state_new.alpha << "," << state_new.beta);
         }
         else
         {
             state_new.alpha = (state_old.alpha - dx(6)) / (1.0 + dx(6));
             state_new.beta = (state_old.beta - dx(7)) / (1.0 + dx(6));
-            SVO_DEBUG_STREAM("dx:" << dx(6) << "," << dx(7) << ";" << state_new.alpha << "," << state_new.beta);
+            LOG_DEBUG_STREAM("dx:" << dx(6) << "," << dx(7) << ";" << state_new.alpha << "," << state_new.beta);
         }
 
         // we need to normalize from time to time otherwise rounding errors sum up

@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -183,7 +183,7 @@ namespace mivins
         }
         else if (num < static_cast<size_t>(px_vec_.cols()))
         {
-            SVO_ERROR_STREAM("Downsizing storage not implemented. cols = " << px_vec_.cols()
+            LOG_ERROR_STREAM("Downsizing storage not implemented. cols = " << px_vec_.cols()
                                                                            << " , desired = " << num << ", num features = " << num_features_);
         }
     }
@@ -510,7 +510,7 @@ namespace mivins
             }
             if (depth_vec.empty())
             {
-                SVO_WARN_STREAM("Cannot set scene depth. Frame has no point-observations!");
+                LOG_WARN_STREAM("Cannot set scene depth. Frame has no point-observations!");
                 return false;
             }
             depth_median = vk::getMedian(depth_vec);

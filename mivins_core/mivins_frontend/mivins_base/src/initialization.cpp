@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -165,7 +165,7 @@ namespace mivins
             options_.reproj_error_thresh, options_.init_min_inliers);
         if (H_cur_ref.score < options_.init_min_inliers)
         {
-            SVO_WARN_STREAM("Init Homography: Have " << H_cur_ref.score << "inliers. "
+            LOG_WARN_STREAM("Init Homography: Have " << H_cur_ref.score << "inliers. "
                                                      << options_.init_min_inliers << " inliers minimum required.");
             return InitResult::kFailure;
         }
@@ -244,7 +244,7 @@ namespace mivins
 #ifdef SVO_USE_OPENGV
         if (!have_rotation_prior_)
         {
-            SVO_ERROR_STREAM("TwoPointInit has no rotation prior.");
+            LOG_ERROR_STREAM("TwoPointInit has no rotation prior.");
             return InitResult::kFailure;
         }
         have_rotation_prior_ = false;
@@ -307,7 +307,7 @@ namespace mivins
         return InitResult::kFailure;
 
 #else
-        SVO_ERROR_STREAM("You need to compile SVO with OpenGV to use TwoPointInit!");
+        LOG_ERROR_STREAM("You need to compile SVO with OpenGV to use TwoPointInit!");
         return InitResult::kFailure;
 #endif
     }
@@ -376,7 +376,7 @@ namespace mivins
         return InitResult::kFailure;
 
 #else
-        SVO_ERROR_STREAM("You need to compile SVO with OpenGV to use TwoPointInit!");
+        LOG_ERROR_STREAM("You need to compile SVO with OpenGV to use TwoPointInit!");
         return InitResult::kFailure;
 #endif
     }
@@ -593,7 +593,7 @@ namespace mivins
 
   if(frames_cur->nFts() < options_.init_min_inliers)
   {
-    SVO_WARN_STREAM("Init WARNING: "<<options_.init_min_inliers<<" inliers minimum required.");
+    LOG_WARN_STREAM("Init WARNING: "<<options_.init_min_inliers<<" inliers minimum required.");
     return InitResult::kFailure;
   }
 
@@ -607,7 +607,7 @@ namespace mivins
         return InitResult::kSuccess;
 
 #else
-        SVO_ERROR_STREAM("You need to compile SVO with OpenGV to use TwoPointInit!");
+        LOG_ERROR_STREAM("You need to compile SVO with OpenGV to use TwoPointInit!");
         return InitResult::kFailure;
 #endif
     }
@@ -741,7 +741,7 @@ namespace mivins
         return InitResult::kSuccess;
 
 #else
-        SVO_ERROR_STREAM("You need to compile SVO with GTSAM to use ArrayInitOptimization!");
+        LOG_ERROR_STREAM("You need to compile SVO with GTSAM to use ArrayInitOptimization!");
         return InitResult::kFailure;
 #endif
     }
@@ -859,7 +859,7 @@ namespace mivins
                 new_point->AddObservation(frame_cur, matches_cur_ref[i].first);
             }
 
-            SVO_INFO_STREAM("Init: Triangulated " << matches_cur_ref.size() << " points");
+            LOG_INFO_STREAM("Init: Triangulated " << matches_cur_ref.size() << " points");
         }
 
         void displayFeatureTracks(

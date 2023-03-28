@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ namespace mivins
             return UpdateResult::kDefault;
 
         stage_ = Stage::kTracking;
-        SVO_INFO_STREAM("Init: Selected first frame.");
+        LOG_INFO_STREAM("Init: Selected first frame.");
         return UpdateResult::kKeyframe;
     }
 
@@ -87,7 +87,7 @@ namespace mivins
 
         initializer_->setDepthPrior(options_.init_map_scale);
         auto res = initializer_->AddFrameBundle(new_frames_);
-        SVO_INFO_STREAM("Init: Processing took " << t.stop() * 1000 << "ms");
+        LOG_INFO_STREAM("Init: Processing took " << t.stop() * 1000 << "ms");
 
         if (res == InitResult::kFailure)
             return UpdateResult::kFailure;
@@ -115,7 +115,7 @@ namespace mivins
 
         stage_ = Stage::kTracking;
         initializer_->reset();
-        SVO_INFO_STREAM("Init: Selected second frame, triangulated initial map.");
+        LOG_INFO_STREAM("Init: Selected second frame, triangulated initial map.");
         return UpdateResult::kKeyframe;
     }
 
@@ -154,7 +154,7 @@ namespace mivins
                 depth_filter_->SeedsUpdate(overlap_kfs_.at(i), new_frames_->at(i));
             return UpdateResult::kDefault;
         }
-        SVO_DEBUG_STREAM("New keyframe selected.");
+        LOG_DEBUG_STREAM("New keyframe selected.");
 
         for (size_t i = 0; i < new_frames_->size(); ++i)
             MakeKeyframe(i);
@@ -186,7 +186,7 @@ namespace mivins
             depth_median = 3.0;
             depth_max = 100;
         }
-        SVO_DEBUG_STREAM("Average Depth " << frame->cam()->getLabel() << ": " << depth_median);
+        LOG_DEBUG_STREAM("Average Depth " << frame->cam()->getLabel() << ": " << depth_median);
         depth_filter_->AddKeyframe(
             new_frames_->at(camera_id), depth_median, 0.5 * depth_min, depth_median * 1.5);
         depth_filter_->SeedsUpdate(overlap_kfs_.at(camera_id), frame);

@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ namespace mivins
         const DepthOptimizationOptions &options)
         : m_opt_options(options), m_matcher(new PatchMatcher())
     {
-        SVO_INFO_STREAM("DepthOptimization: created.");
+        LOG_INFO_STREAM("DepthOptimization: created.");
         m_matcher->m_patch_matcher_options.scan_on_unit_sphere = options.scan_epi_unit_sphere;
         m_matcher->m_patch_matcher_options.affine_est_offset_ = options.affine_est_offset;
         m_matcher->m_patch_matcher_options.affine_est_gain_ = options.affine_est_gain;
@@ -81,26 +81,26 @@ namespace mivins
     DepthOptimization::~DepthOptimization()
     {
         StopFilterThread();
-        SVO_INFO_STREAM("DepthOptimization: destructed.");
+        LOG_INFO_STREAM("DepthOptimization: destructed.");
     }
 
     void DepthOptimization::StartFilterThread()
     {
         if (m_thread)
         {
-            SVO_ERROR_STREAM("DepthOptimization: Thread already started!");
+            LOG_ERROR_STREAM("DepthOptimization: Thread already started!");
             return;
         }
-        SVO_INFO_STREAM("DepthOptimization: Start thread.");
+        LOG_INFO_STREAM("DepthOptimization: Start thread.");
         m_thread.reset(new std::thread(&DepthOptimization::SeedsUpdateLoop, this));
     }
 
     void DepthOptimization::StopFilterThread()
     {
-        SVO_DEBUG_STREAM("DepthOptimization: stop thread invoked.");
+        LOG_DEBUG_STREAM("DepthOptimization: stop thread invoked.");
         if (m_thread != nullptr)
         {
-            SVO_DEBUG_STREAM("DepthOptimization: interrupt and join thread... ");
+            LOG_DEBUG_STREAM("DepthOptimization: interrupt and join thread... ");
             m_quit_thread = true;
             m_jobs_condvar.notify_all();
             m_thread->join();
@@ -172,7 +172,7 @@ namespace mivins
         ULockT lock(m_jobs_mut);
         while (!m_jobs.empty())
             m_jobs.pop();
-        SVO_INFO_STREAM("DepthOptimization: RESET.");
+        LOG_INFO_STREAM("DepthOptimization: RESET.");
     }
 
     void DepthOptimization::SeedsUpdateLoop()
@@ -274,7 +274,7 @@ namespace mivins
                     update_filter_permon->writeToFile();
                 }
             }
-            SVO_DEBUG_STREAM("DepthOptimization: " << cur_frame->cam()->getLabel() << " updated "
+            LOG_DEBUG_STREAM("DepthOptimization: " << cur_frame->cam()->getLabel() << " updated "
                                                    << n_success << " Seeds successfully.");
         }
         else
@@ -486,7 +486,7 @@ namespace mivins
                 }
             }
 
-            SVO_DEBUG_STREAM("DepthOptimization: " << frame->cam()->getLabel() << " Initialized " << new_total << " new seeds");
+            LOG_DEBUG_STREAM("DepthOptimization: " << frame->cam()->getLabel() << " Initialized " << new_total << " new seeds");
         }
 
         bool SingleSeedUpdate(
@@ -501,7 +501,7 @@ namespace mivins
         {
             if (cur_frame.GetFrameId() == ref_frame.GetFrameId())
             {
-                SVO_WARN_STREAM_THROTTLE(1.0, "update seed with ref frame");
+                LOG_WARN_STREAM_THROTTLE(1.0, "update seed with ref frame");
                 return false;
             }
 
@@ -553,7 +553,7 @@ namespace mivins
 
             // sanity checks
             if (std::isnan(seed::mu(state)))
-                SVO_ERROR_STREAM("seed is nan!");
+                LOG_ERROR_STREAM("seed is nan!");
 
             if (std::isnan(std::sqrt(seed::sigma2(state))))
                 LOG(WARNING) << "seed sigma is nan!" << seed::sigma2(state) << ", sq" << std::sqrt(seed::sigma2(state)) << ", check-convergence = " << check_convergence;
@@ -751,7 +751,7 @@ namespace mivins
             FramePtr frame = seed->ftr_->frame.lock();
             if (!frame)
             {
-                SVO_ERROR_STREAM("Could not lock weak_ptr<Frame> in DepthOptimization::SeedCovarianceSet");
+                LOG_ERROR_STREAM("Could not lock weak_ptr<Frame> in DepthOptimization::SeedCovarianceSet");
                 return false;
             }
             Eigen::Matrix2d H;
@@ -780,7 +780,7 @@ namespace mivins
 
             if ((bool)std::isnan((double)seed->patch_cov_(0, 0)))
             {
-                SVO_WARN_STREAM("Seed Patch Covariance is NaN");
+                LOG_WARN_STREAM("Seed Patch Covariance is NaN");
                 return false;
             }
             return true;

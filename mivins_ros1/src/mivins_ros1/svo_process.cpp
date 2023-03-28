@@ -406,25 +406,25 @@ namespace mivins
         // {
         //   case 'q':
         //     quit_ = true;
-        //     SVO_INFO_STREAM("SVO user input: QUIT");
+        //     LOG_INFO_STREAM("SVO user input: QUIT");
         //     break;
         //   case 'r':
         //     svo_->reset();
         //     idle_ = true;
-        //     SVO_INFO_STREAM("SVO user input: RESET");
+        //     LOG_INFO_STREAM("SVO user input: RESET");
         //     break;
         //   case 's':
         //     svo_->start();
         //     idle_ = false;
-        //     SVO_INFO_STREAM("SVO user input: START");
+        //     LOG_INFO_STREAM("SVO user input: START");
         //     break;
         //    case 'c':
         //     svo_->SetCompensation(true);
-        //     SVO_INFO_STREAM("Enabled affine compensation.");
+        //     LOG_INFO_STREAM("Enabled affine compensation.");
         //     break;
         //    case 'C':
         //     svo_->SetCompensation(false);
-        //     SVO_INFO_STREAM("Disabled affine compensation.");
+        //     LOG_INFO_STREAM("Disabled affine compensation.");
         //     break;
         //   default: ;
         // }

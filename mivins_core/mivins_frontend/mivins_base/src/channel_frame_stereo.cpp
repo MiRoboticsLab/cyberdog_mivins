@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ namespace mivins
                 {
                     if (vins_backend_->tryToInitialize(new_frames_))
                     {
-                        SVO_INFO_STREAM("Init finish...");
+                        LOG_INFO_STREAM("Init finish...");
                         stage_ = Stage::kTracking;
                         tracking_quality_ = TrackingQuality::kGood;
                         res = UpdateResult::kKeyframe;
@@ -83,7 +83,7 @@ namespace mivins
                 }
                 else
                 {
-                    SVO_INFO_STREAM("Init finish...");
+                    LOG_INFO_STREAM("Init finish...");
                     stage_ = Stage::kTracking;
                     tracking_quality_ = TrackingQuality::kGood;
                     res = UpdateResult::kKeyframe;
@@ -103,7 +103,7 @@ namespace mivins
         const FramePtr &frame1 = new_frames_->at(1);
         if (first_img_)
         {
-            SVO_DEBUG_STREAM("T_W_B="<<new_frames_->Get_T_W_B());
+            LOG_DEBUG_STREAM("T_W_B="<<new_frames_->Get_T_W_B());
 
             stereo_triangulation_->compute(frame0, frame1);
             
@@ -124,13 +124,13 @@ namespace mivins
             {
                 printf("First frame: %ld landmarks is constructed, is less than the required number: %ld\n", 
                     init_lm_cnt, options_.init_min_fts);
-                //SVO_DEBUG_STREAM("First frame: "<<init_lm_cnt<<" landmarks is constructed, is less than the required number:"<<options_.init_min_fts);    
+                //LOG_DEBUG_STREAM("First frame: "<<init_lm_cnt<<" landmarks is constructed, is less than the required number:"<<options_.init_min_fts);    
                 return ;
             }
             else
             {
                 //printf("First frame: %ld landmarks is constructed\n", frame0->NumLandmarks());
-                SVO_DEBUG_STREAM("First frame:"<<frame0->NumLandmarks()<<"landmarks is constructed.");
+                LOG_DEBUG_STREAM("First frame:"<<frame0->NumLandmarks()<<"landmarks is constructed.");
                 first_img_ = false;
                 frame_utils::GetSceneDepth(frame0, depth_median_, depth_min_, depth_max_);
                 depth_filter_->AddKeyframe(frame0, depth_median_, 0.5 * depth_min_, depth_median_ * 1.5);
@@ -196,7 +196,7 @@ namespace mivins
     //receive vins intialize result && set
     UpdateResult ChannelFrameStereo::ProcessVinsFrame()
     {
-        SVO_INFO_STREAM("Init: Selected first frame.");
+        LOG_INFO_STREAM("Init: Selected first frame.");
         stage_ = Stage::kTracking;
         tracking_quality_ = TrackingQuality::kGood;
         return UpdateResult::kKeyframe;
@@ -234,7 +234,7 @@ namespace mivins
             // savet<<t_project.toc()<<" ";
         }
         //std::cout << "s2:n=" << n_tracked_features << "," << options_.quality_min_fts << std::endl;
-        SVO_DEBUG_STREAM("s2:n=" << n_tracked_features << "," << options_.quality_min_fts);
+        LOG_DEBUG_STREAM("s2:n=" << n_tracked_features << "," << options_.quality_min_fts);
 
         std::vector<int> index;
         int n_count = 0;
@@ -266,7 +266,7 @@ namespace mivins
         }
 
         //std::cout << "n_count=" << n_count << std::endl;
-        SVO_DEBUG_STREAM("n_count=" << n_count);
+        LOG_DEBUG_STREAM("n_count=" << n_count);
         if(n_tracked_features < 10)
         {
             ++bad_reproj_cnt_;
@@ -298,7 +298,7 @@ namespace mivins
         {
             n_tracked_features = OptimizePose();
             //std::cout << "s3:n" << n_tracked_features << std::endl;
-            SVO_DEBUG_STREAM("s3:n" << n_tracked_features);
+            LOG_DEBUG_STREAM("s3:n" << n_tracked_features);
 
             if(n_tracked_features < 10)
             {
@@ -346,7 +346,7 @@ namespace mivins
                 depth_filter_->SeedsUpdate(overlap_kfs_.at(i), new_frames_->at(i));
             return UpdateResult::kDefault;
         }
-        SVO_DEBUG_STREAM("New keyframe selected.");
+        LOG_DEBUG_STREAM("New keyframe selected.");
         return MakeKeyframe();
     }
 

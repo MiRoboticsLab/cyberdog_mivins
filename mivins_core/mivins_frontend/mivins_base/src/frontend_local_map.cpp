@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ namespace mivins
     FrontendLocalMap::~FrontendLocalMap()
     {
         reset();
-        SVO_INFO_STREAM("FrontendLocalMap destructed");
+        LOG_INFO_STREAM("FrontendLocalMap destructed");
     }
 
     void FrontendLocalMap::reset()
@@ -82,7 +82,7 @@ namespace mivins
                 frame->DeleteLandmark(obs.keypoint_index);
             }
             else
-                SVO_ERROR_STREAM("could not lock weak_ptr<Frame> in FrontendLocalMap::SafeDeletePoint");
+                LOG_ERROR_STREAM("could not lock weak_ptr<Frame> in FrontendLocalMap::SafeDeletePoint");
         }
         pt->obs_.clear();
     }
@@ -96,7 +96,7 @@ namespace mivins
     void FrontendLocalMap::EmptyPointsTrash()
     {
         std::lock_guard<std::mutex> lock(points_to_delete_mutex_);
-        SVO_DEBUG_STREAM("Deleting " << points_to_delete_.size() << " point from trash");
+        LOG_DEBUG_STREAM("Deleting " << points_to_delete_.size() << " point from trash");
         for (auto &pt : points_to_delete_)
         {
             SafeDeletePoint(pt);

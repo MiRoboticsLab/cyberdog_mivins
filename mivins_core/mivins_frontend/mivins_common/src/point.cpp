@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ namespace mivins
             normal_set_ = true;
         }
         else
-            SVO_ERROR_STREAM("could not unlock weak_ptr<frame> in normal initialization");
+            LOG_ERROR_STREAM("could not unlock weak_ptr<frame> in normal initialization");
     }
     /// Get Frame with similar viewpoint.
     /// pos               -- input parameter
@@ -129,7 +129,7 @@ namespace mivins
             }
             else
             {
-                SVO_DEBUG_STREAM("could not unlock weak_ptr<Frame> in Point::GetCloseViewObs"
+                LOG_DEBUG_STREAM("could not unlock weak_ptr<Frame> in Point::GetCloseViewObs"
                                  << ", Point-ID = " << id_
                                  << ", Point-nObs = " << obs_.size()
                                  << ", Frame-ID = " << obs.frame_id
@@ -140,7 +140,7 @@ namespace mivins
         }
         if (min_cos_angle < 0.4) // assume that observations larger than 66° are useless
         {
-            SVO_DEBUG_STREAM("GetCloseViewObs(): obs is from too far away: " << min_cos_angle);
+            LOG_DEBUG_STREAM("GetCloseViewObs(): obs is from too far away: " << min_cos_angle);
             return false;
         }
         return true;
@@ -153,7 +153,7 @@ namespace mivins
         const FramePtr ref_frame = obs_.front().frame.lock();
         if (!ref_frame)
         {
-            SVO_ERROR_STREAM("getTriangualtionParallax(): Could not lock ref_frame");
+            LOG_ERROR_STREAM("getTriangualtionParallax(): Could not lock ref_frame");
             return 0.0;
         }
 
@@ -180,7 +180,7 @@ namespace mivins
         if (auto ref_frame = obs_.front().frame.lock())
             return ref_frame;
         else
-            SVO_ERROR_STREAM("could not lock weak_ptr<Frame> in point");
+            LOG_ERROR_STREAM("could not lock weak_ptr<Frame> in point");
         return nullptr;
     }
 
@@ -208,7 +208,7 @@ namespace mivins
         }
         if (index != n_obs)
         {
-            SVO_ERROR_STREAM("TriangulateLinear failed, could not lock all frames.");
+            LOG_ERROR_STREAM("TriangulateLinear failed, could not lock all frames.");
             return false;
         }
 
@@ -273,7 +273,7 @@ namespace mivins
 
         if (obs_.size() < 2)
         {
-            SVO_ERROR_STREAM("optimizing point with less than two observations");
+            LOG_ERROR_STREAM("optimizing point with less than two observations");
             return;
         }
 
@@ -305,7 +305,7 @@ namespace mivins
                     }
                 }
                 else
-                    SVO_ERROR_STREAM("could not unlock weak_ptr<Frame> in Point::optimize");
+                    LOG_ERROR_STREAM("could not unlock weak_ptr<Frame> in Point::optimize");
             }
 
             // solve linear system

@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ namespace mivins
         if (dynamic_cast<FrameGpu *>(ref_frames->at(0).get()) == nullptr || !dynamic_cast<FrameGpu *>(ref_frames->at(0).get())->cu_camera_)
         {
 
-            SVO_WARN_STREAM("Sparse image align: Input frame is not a GPU. Creating GPU data structures now.");
+            LOG_WARN_STREAM("Sparse image align: Input frame is not a GPU. Creating GPU data structures now.");
             // Input is not a GPU frame bundle. GPU datastructures need to be instantiated.
             for (int i = 0; i < nbr_cameras; ++i)
             {
@@ -101,7 +101,7 @@ namespace mivins
                 }
                 else
                 {
-                    SVO_ERROR_STREAM("Camera model not supported yet for GPU version");
+                    LOG_ERROR_STREAM("Camera model not supported yet for GPU version");
                     return 0;
                 }
             }
@@ -323,7 +323,7 @@ namespace mivins
                     nr_fts_extracted++;
                 }
             }
-            SVO_DEBUG_STREAM("Img Align: Maximum Number of Features = " << ref_frame.num_features_);
+            LOG_DEBUG_STREAM("Img Align: Maximum Number of Features = " << ref_frame.num_features_);
         }
 
     } // namespace sparse_img_align_host_utils

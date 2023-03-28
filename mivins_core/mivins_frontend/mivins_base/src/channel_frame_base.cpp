@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -173,7 +173,7 @@ namespace mivins
     void ChannelFrameBase::savefile()
     {
         //std::cout<<"ChannelFrameBase::savefile-------"<<std::endl;
-        SVO_DEBUG_STREAM("ChannelFrameBase::savefile-------");
+        LOG_DEBUG_STREAM("ChannelFrameBase::savefile-------");
         // std::string path = getenv("HOME");
         //savetwb.open(path + "/savelog/stamped_traj_estimate.txt");
         //savetwb.open("/SDCARD/miloc/maps/default/visual/trajectory.txt");// for map & miloc
@@ -229,7 +229,7 @@ namespace mivins
             if (last_frames_->GetMinTimestampNanoseconds() >= static_cast<int64_t>(timestamp))
             {
                 VLOG(4) << "Dropping frame: timestamp older than last frame of id " << last_frames_->GetBundleId();
-                SVO_WARN_STREAM("Dropping frame: timestamp older than last frame.");
+                LOG_WARN_STREAM("Dropping frame: timestamp older than last frame.");
                 return false;
             }
         }
@@ -320,7 +320,7 @@ namespace mivins
             if (last_frames_->GetMinTimestampNanoseconds() >= static_cast<int64_t>(timestamp))
             {
                 VLOG(4) << "Dropping frame: timestamp older than last frame of id " << last_frames_->GetBundleId();
-                SVO_WARN_STREAM("Dropping frame: timestamp older than last frame.");
+                LOG_WARN_STREAM("Dropping frame: timestamp older than last frame.");
                 return false;
             }
         }
@@ -389,7 +389,7 @@ namespace mivins
             if (last_frames_->GetMinTimestampNanoseconds() >= static_cast<int64_t>(timestamp))
             {
                 VLOG(4) << "Dropping frame: timestamp older than last frame of id " << last_frames_->GetBundleId();
-                SVO_WARN_STREAM("Dropping frame: timestamp older than last frame.");
+                LOG_WARN_STREAM("Dropping frame: timestamp older than last frame.");
                 return false;
             }
         }
@@ -469,7 +469,7 @@ namespace mivins
         VLOG(40) << "New Frame Bundle received: " << frame_bundle->GetBundleId();
         //CHECK_EQ(frame_bundle->size(), cams_->numCameras());
         //std::cout << "...............New Frame Bundle received: " << frame_bundle->GetBundleId() << std::endl;
-        SVO_DEBUG_STREAM("...............New Frame Bundle received: " << frame_bundle->GetBundleId());
+        LOG_DEBUG_STREAM("...............New Frame Bundle received: " << frame_bundle->GetBundleId());
         // ---------------------------------------------------------------------------AddFrameBundle
         // Prepare processing.
 
@@ -784,7 +784,7 @@ namespace mivins
 
             // Set stage.
             stage_ = Stage::kRelocalization;
-            SVO_DEBUG_STREAM("IN[AddFrameBundle]---------------------------------Stage::kRelocalization---------------------------------------!");
+            LOG_DEBUG_STREAM("IN[AddFrameBundle]---------------------------------Stage::kRelocalization---------------------------------------!");
             //std::cout << "IN[AddFrameBundle]---------------------------------Stage::kRelocalization---------------------------------------!" << std::endl;
             tracking_quality_ = TrackingQuality::kInsufficient;
         }
@@ -970,7 +970,7 @@ namespace mivins
         sparse_img_align_->Reset();
         if (have_motion_prior_)
         {
-            SVO_DEBUG_STREAM("Apply IMU Prior to Image align");
+            LOG_DEBUG_STREAM("Apply IMU Prior to Image align");
             double prior_trans = options_.img_align_prior_lambda_trans;
             if (map_->size() < 5)
                 prior_trans = 0; // during the first few frames we don't want a prior (TODO)
@@ -1080,7 +1080,7 @@ namespace mivins
 
         if (n_total_ftrs < options_.quality_min_fts)
         {
-            SVO_WARN_STREAM_THROTTLE(1.0, "Not enough matched features: " +
+            LOG_WARN_STREAM_THROTTLE(1.0, "Not enough matched features: " +
                                               std::to_string(n_total_ftrs));
         }
 
@@ -1115,7 +1115,7 @@ namespace mivins
             //SVO_LOG("sfba_n_edges_final", sfba_n_edges_final);
             SVO_STOP_TIMER("pose_optimizer");
         }
-        SVO_DEBUG_STREAM(
+        LOG_DEBUG_STREAM(
             "PoseOptimizer:"
             << "\t ErrInit = " << pose_optimizer_->stats_.reproj_error_before << "\t ErrFin = " << pose_optimizer_->stats_.reproj_error_after << "\t nObs = " << sfba_n_edges_final);
         return sfba_n_edges_final;
@@ -1430,7 +1430,7 @@ backend_scale_initialized_ = false;
         }
         else {
             //std::cout<< "reloc last_frames_->size() < 0 or last_frames_ = nullptr" << std::endl;
-            SVO_DEBUG_STREAM("reloc last_frames_->size() < 0 or last_frames_ = nullptr");
+            LOG_DEBUG_STREAM("reloc last_frames_->size() < 0 or last_frames_ = nullptr");
         }
 
     }
@@ -1459,7 +1459,7 @@ backend_scale_initialized_ = false;
         tracking_quality_ = TrackingQuality::kGood;
         if (num_observations < options_.quality_min_fts)
         {
-            SVO_WARN_STREAM_THROTTLE(0.5, "Tracking less than "
+            LOG_WARN_STREAM_THROTTLE(0.5, "Tracking less than "
                                               << options_.quality_min_fts << " features!");
             tracking_quality_ = TrackingQuality::kInsufficient;
         }
@@ -1469,7 +1469,7 @@ backend_scale_initialized_ = false;
         if (!last_frames_->IsKeyframe() &&
             feature_drop > options_.quality_max_fts_drop)
         {
-            SVO_WARN_STREAM("Lost " << feature_drop << " features!");
+            LOG_WARN_STREAM("Lost " << feature_drop << " features!");
             tracking_quality_ = TrackingQuality::kInsufficient;
         }
     }
@@ -1520,7 +1520,7 @@ backend_scale_initialized_ = false;
         if (n_tracked_fts < options_.kfselect_numkfs_lower_thresh)
         {
             //std::cout << "KF Select: NEW KEYFRAME Below lower bound\n";
-            SVO_DEBUG_STREAM("KF Select: NEW KEYFRAME Below lower bound");
+            LOG_DEBUG_STREAM("KF Select: NEW KEYFRAME Below lower bound");
             return true;
         }
 
@@ -1717,7 +1717,7 @@ backend_scale_initialized_ = false;
         if (have_rotation_prior_ && !options_.use_imu_only_for_gravityalign)
         {
             VLOG(40) << "Get motion prior from provided rotation prior.";
-            SVO_DEBUG_STREAM("imu:rotation prior");
+            LOG_DEBUG_STREAM("imu:rotation prior");
             if(last_frames_ && new_frames_)
             {
                 double delta_ts = new_frames_->GetMinTimestampSeconds()

@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ namespace mivins
         // Check if enough or to much memory is allocated.
         if ((capacity > feature_capacity_) || (feature_capacity_ - capacity > kMaxStorageSurplus))
         {
-            SVO_WARN_STREAM("Reallocate GPU memory. Changing capacity from " << feature_capacity_ << " to "
+            LOG_WARN_STREAM("Reallocate GPU memory. Changing capacity from " << feature_capacity_ << " to "
                                                                              << capacity << " features.");
             uv_cache_.reset(new UvCache(capacity));
             xyz_ref_cache_.reset(new XyzRefCache(capacity));
@@ -61,7 +61,7 @@ namespace mivins
         // Check if enough or to much memory is allocated.
         if ((capacity > reduction_cache_capacity_) || (reduction_cache_capacity_ - capacity > kMaxStorageSurplus))
         {
-            SVO_WARN_STREAM("Reallocate memory for reduction step from " << reduction_cache_capacity_ << " to "
+            LOG_WARN_STREAM("Reallocate memory for reduction step from " << reduction_cache_capacity_ << " to "
                                                                          << capacity << " blocks.");
             hessian_reduction_cache_.reset(new HessianReductionCache(capacity * kHessianTriagStride));
             gradient_reduction_cache_.reset(new GradientReductionCache(capacity * kJacStride));
@@ -79,7 +79,7 @@ namespace mivins
             // copying from device to host possible.
             if (nr_visible_cache_host_->roi().length() != capacity)
             {
-                SVO_DEBUG_STREAM("Change region of interest of linear memory (before "
+                LOG_DEBUG_STREAM("Change region of interest of linear memory (before "
                                  << nr_visible_cache_host_->roi().length() << ", after "
                                  << capacity << " elements)");
 
@@ -900,7 +900,7 @@ namespace mivins
                 {
 
                 case 512:
-                    SVO_ERROR_STREAM(" 512 threads exceed the 48kB of available shared memory per block!");
+                    LOG_ERROR_STREAM(" 512 threads exceed the 48kB of available shared memory per block!");
                     //      k_jacobianReduceHessianGradient<512, true><<< dimGrid, dimBlock >>>(jacobian_input_device,
                     //                                                                          residual_input_device,
                     //                                                                          visibility_input_device,
@@ -1017,7 +1017,7 @@ namespace mivins
                                                                             patch_area);
                     break;
                 default:
-                    SVO_ERROR_STREAM("The block size must be a power of 2 for the reduction step! Block size is " << threads << ".");
+                    LOG_ERROR_STREAM("The block size must be a power of 2 for the reduction step! Block size is " << threads << ".");
                     break;
                 }
             }
@@ -1026,7 +1026,7 @@ namespace mivins
                 switch (threads)
                 {
                 case 512:
-                    SVO_ERROR_STREAM(" 512 threads exceed the 48kB of available shared memory per block!");
+                    LOG_ERROR_STREAM(" 512 threads exceed the 48kB of available shared memory per block!");
                     //      k_reduceHessianGradient<256, false><<< dimGrid, dimBlock >>>(jacobian_input_device,
                     //                                                                   residual_input_device,
                     //                                                                   visibility_input_device,
@@ -1145,7 +1145,7 @@ namespace mivins
                                                                              patch_area);
                     break;
                 default:
-                    SVO_ERROR_STREAM("The block size must be a power of 2 for the reduction step! Block size is " << threads << ".");
+                    LOG_ERROR_STREAM("The block size must be a power of 2 for the reduction step! Block size is " << threads << ".");
                     break;
                 }
             }

@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,11 +56,11 @@ namespace mivins
             n_fts_to_track += fts.size();
             m_fts_vec.push_back(fts);
         }
-        SVO_DEBUG_STREAM("Img Align: Tracking " << n_fts_to_track << " features.");
+        LOG_DEBUG_STREAM("Img Align: Tracking " << n_fts_to_track << " features.");
         //if (n_fts_to_track == 0)
         if(n_fts_to_track < 40)
         {
-            SVO_ERROR_STREAM("SparseImgAlign: no features to track!");
+            LOG_ERROR_STREAM("SparseImgAlign: no features to track!");
             return 0;
         }
 
@@ -258,7 +258,7 @@ namespace mivins
             //        ++n;
             //      }
             //    }
-            //    SVO_DEBUG_STREAM("SparseImgAlign: add " << n << " additional seeds.");
+            //    LOG_DEBUG_STREAM("SparseImgAlign: add " << n << " additional seeds.");
             //  }
 
             // ignore any feature point, which does not project fully in the image
@@ -287,7 +287,7 @@ namespace mivins
                 if (!(u_tl_i < 0 || v_tl_i < 0 || u_tl_i + patch_size_wb >= cols_minus_two || v_tl_i + patch_size_wb >= rows_minus_two))
                     fts.push_back(i);
             }
-            SVO_DEBUG_STREAM("Img Align: Maximum Number of Features = " << ref_frame.num_features_);
+            LOG_DEBUG_STREAM("Img Align: Maximum Number of Features = " << ref_frame.num_features_);
         }
 
         void PrecomputeBaseCaches(const Frame &ref_frame,

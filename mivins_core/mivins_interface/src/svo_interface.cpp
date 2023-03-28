@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -78,12 +78,12 @@ namespace mivins
         //   break;
         case PipelineType::kMono:
             //std::cout << "PipelineType: kMono\n";
-            SVO_DEBUG_STREAM("PipelineType: kMono");
+            LOG_DEBUG_STREAM("PipelineType: kMono");
             svo_ = factory::makeMono(config_file_, calib_file_);
             break;
         case PipelineType::kStereo:
             //std::cout << "PipelineType: kStereo\n";
-            SVO_DEBUG_STREAM("PipelineType: kStereo");
+            LOG_DEBUG_STREAM("PipelineType: kStereo");
             svo_ = factory::makeStereo(config_file_, calib_file_);
             break;
         // case PipelineType::kTripleWithStereo:
@@ -92,7 +92,7 @@ namespace mivins
         //   break;
         case PipelineType::kTripleWithDepth:
             //std::cout << "PipelineType: kTripleWithDepth\n";
-            SVO_DEBUG_STREAM("PipelineType: kTripleWithDepth");
+            LOG_DEBUG_STREAM("PipelineType: kTripleWithDepth");
             svo_ = factory::makeTripleWithDepth(config_file_, calib_file_);
             break;
         default:
@@ -103,7 +103,7 @@ namespace mivins
         if (getParam<bool>(config, "use_imu", false))
         {
             //std::cout << "use_imu........" << std::endl;
-            SVO_DEBUG_STREAM("use_imu........");
+            LOG_DEBUG_STREAM("use_imu........");
             imu_handler_ = factory::getImuHandler(config_file_, calib_file_);
             svo_->imu_handler_ = imu_handler_;
             header_tracker_ = std::make_shared<ekf3dof::HeadTracker>();
@@ -119,14 +119,14 @@ namespace mivins
         if (getParam<bool>(config, "use_imu_only_for_gravityalign_", false))
         {
             //std::cout << "use_imu_only_for_gravityalign_........" << std::endl;
-            SVO_DEBUG_STREAM("use_imu_only_for_gravityalign_........");
+            LOG_DEBUG_STREAM("use_imu_only_for_gravityalign_........");
         }
         if(getParam<bool>(config, "use_loose_couple", false))
         {
             if(odom_handler_)
             {
                 //std::cout << "Loose couple would be used.\n";
-                SVO_DEBUG_STREAM("Loose couple would be used.");
+                LOG_DEBUG_STREAM("Loose couple would be used.");
                 loose_couple_pose_.setIdentity();
                 loose_couple_ = factory::getLooseCoupleHandler(
                                     config_file_, calib_file_);
@@ -139,7 +139,7 @@ namespace mivins
             if(odom_handler_)
             {
                 //std::cout << "Pose update would be used.\n";
-                SVO_DEBUG_STREAM("Pose update would be used.");
+                LOG_DEBUG_STREAM("Pose update would be used.");
 
                 pose_updater_ = factory::getPoseUpdateHandler(
                                     config_file_);
@@ -150,7 +150,7 @@ namespace mivins
         if (getParam<bool>(config, "backend_opt", false))
         {
             //std::cout << "------------------------------------------------ make vins backend begin\n";
-            SVO_DEBUG_STREAM("------------------------------------------------ make vins backend begin");
+            LOG_DEBUG_STREAM("------------------------------------------------ make vins backend begin");
             vins_backend_interface_ = vins_backend_factory::makeBackend(config_file_, svo_->GetNCamera(), (int)pipeline_type_);
             svo_->SetVinsBackend(vins_backend_interface_);
 
@@ -164,7 +164,7 @@ namespace mivins
             }
             vins_backend_interface_->setOdomHandler(odom_handler_);
             //std::cout << "---------------------------------------------------make vins backend end\n";
-            SVO_DEBUG_STREAM("----------------------------------------------------make vins backend end");
+            LOG_DEBUG_STREAM("----------------------------------------------------make vins backend end");
         }
 
         exposure_time_enable = false;
@@ -176,7 +176,7 @@ namespace mivins
             loadTimes(l_times, 0);
             loadTimes(r_times, 1);
             //std::cout << "ltimes size=" << ltimes.size() << "," << rtimes.size() << std::endl;
-            SVO_DEBUG_STREAM("ltimes size=" << ltimes.size() << "," << rtimes.size());
+            LOG_DEBUG_STREAM("ltimes size=" << ltimes.size() << "," << rtimes.size());
         }
 
         svo_->Start();
@@ -236,7 +236,7 @@ namespace mivins
 
         svo_->Start();
         //std::cout<< "SvoInterface Destructed SVO2" << std::endl;
-        SVO_DEBUG_STREAM("SvoInterface Destructed SVO2");
+        LOG_DEBUG_STREAM("SvoInterface Destructed SVO2");
     }
 
     void SvoInterface::savefile()
@@ -642,7 +642,7 @@ namespace mivins
         if (imu_handler_)
             imu_handler_->AddImuMeasurement(m);
         else
-            SVO_ERROR_STREAM("SvoNode has no ChannelImu");
+            LOG_ERROR_STREAM("SvoNode has no ChannelImu");
             
         if(!data_align_) data_align_.reset(new DataAlign());
         data_align_->inputImu(ts, gyr_imu, acc_imu);
@@ -682,7 +682,7 @@ namespace mivins
                         odom_handler_->AddOdomMeasurementProcessed(m_processed);
                     }
                     else
-                        SVO_ERROR_STREAM("SvoNode has no ChannelOdom");
+                        LOG_ERROR_STREAM("SvoNode has no ChannelOdom");
 
                     if(!data_align_) data_align_.reset(new DataAlign());
                     data_align_->inputOdom(ts, m_processed.orientation_, m_processed.position_, 
@@ -696,7 +696,7 @@ namespace mivins
                         odom_handler_->AddOdomMeasurementProcessed(m_processed);
                     }
                     else
-                        SVO_ERROR_STREAM("SvoNode has no ChannelOdom");
+                        LOG_ERROR_STREAM("SvoNode has no ChannelOdom");
 
                     if(!data_align_) data_align_.reset(new DataAlign());
                     data_align_->inputOdom(ts, orientation, position, linear_velocity, angular_velocity);
@@ -713,7 +713,7 @@ namespace mivins
                     if(odom_handler_)
                         odom_handler_->AddOdomMeasurement(m_processed);
                     else    
-                        SVO_ERROR_STREAM("SvoNode has no ChannelOdom");
+                        LOG_ERROR_STREAM("SvoNode has no ChannelOdom");
 
                     if(!data_align_) data_align_.reset(new DataAlign());
                     data_align_->inputOdom(ts, m_processed.orientation_, m_processed.position_, 
@@ -724,7 +724,7 @@ namespace mivins
                     if(odom_handler_)
                         odom_handler_->AddOdomMeasurement(m);
                     else
-                        SVO_ERROR_STREAM("SvoNode has no ChannelOdom");
+                        LOG_ERROR_STREAM("SvoNode has no ChannelOdom");
 
                     if(!data_align_) data_align_.reset(new DataAlign());
                     data_align_->inputOdom(ts, orientation, position, linear_velocity, angular_velocity);

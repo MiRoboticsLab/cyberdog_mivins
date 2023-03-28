@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -201,7 +201,7 @@ namespace mivins
                 << ": trials = " << lm_stats.n_trials
                 << ", matches = " << lm_stats.n_matches;
         //std::cout << "repro1:" << lm_stats.n_matches << ":" << lm_stats.n_matches << std::endl;
-        SVO_DEBUG_STREAM("repro1:"<<lm_stats.n_trials <<":"<<lm_stats.n_matches);
+        LOG_DEBUG_STREAM("repro1:"<<lm_stats.n_trials <<":"<<lm_stats.n_matches);
         stats_.add(lm_stats);
 
         // if we have enough landmarks, we still need to set the grid occupancy

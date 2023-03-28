@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -785,7 +785,7 @@ void VinsBackendInterface::updateLatestStates(
     const auto &states = vins_estimator_->states_;
     for(int i = WINDOW_SIZE; i >= 0; --i)
     {
-      const StateGroup &be_state = states[WINDOW_SIZE];
+      const StateGroup &be_state = states[i];
       if(!be_state.frame_bundle)
         continue;
         

@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
+// Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ namespace mivins
 
   map_->AddKeyframe(NewFrame(),
                     bundle_adjustment_type_==BundleAdjustmentType::kCeres);
-  SVO_INFO_STREAM("Init: Selected first frame.");
+  LOG_INFO_STREAM("Init: Selected first frame.");
   stage_ = Stage::kTracking;
   tracking_quality_ = TrackingQuality::kGood;
   */
