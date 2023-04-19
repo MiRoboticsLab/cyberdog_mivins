@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
-#include "mivins_process.h"
+#ifndef MIVINS_NODE_BASE_H_
+#define MIVINS_NODE_BASE_H_
+#include "./mivins_process.h"
+#include <memory>
 namespace mivins_ros2
 {
-
-    class MivinsNodeBase : public rclcpp::Node
-    {
-    public:
-        MivinsNodeBase();
-        ~MivinsNodeBase() = default;
-
-    private:
-        mivins::PipelineType type_;
-
-    public:
-        std::unique_ptr<mivins::MivinsProcess> mivins_process_;
-    };
-
-} // namespace mivins_ros2
+class MivinsNodeBase: public rclcpp::Node
+  {
+public:
+    MivinsNodeBase();
+    ~MivinsNodeBase() = default;
+private:
+    mivins::PipelineType type_;
+public:
+    std::unique_ptr < mivins::MivinsProcess > mivins_process_;
+  };
+}  // namespace mivins_ros2
+#endif  // MIVINS_NODE_BASE_H_

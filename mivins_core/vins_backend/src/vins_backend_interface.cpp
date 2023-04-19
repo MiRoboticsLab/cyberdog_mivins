@@ -775,14 +775,26 @@ void VinsBackendInterface::updateLatestStates(
     return;
   }
 
+  Transformation T = getImu2WorldTrans(last_frames);
+  latest_state_.R = getRotationMatrix(T);
+  latest_state_.P = getPosition(T);
+
   bool update_with_be = false;
   double new_ts = getTimestamp(new_frames);
   double last_ts = getTimestamp(last_frames);
 
   {
     std::lock_guard<std::mutex> lock(vins_estimator_->state_mutex_);
-
     const auto &states = vins_estimator_->states_;
+
+    if(vins_estimator_->use_imu_)
+    {
+      const StateGroup &be_state = states[WINDOW_SIZE];
+      latest_state_.V = be_state.V;
+      latest_state_.Ba = be_state.Ba;
+      latest_state_.Bg = be_state.Bg;
+    }
+
     for(int i = WINDOW_SIZE; i >= 0; --i)
     {
       const StateGroup &be_state = states[i];
@@ -812,12 +824,6 @@ void VinsBackendInterface::updateLatestStates(
     }
   }
 
-  if(!update_with_be)
-  {
-    Transformation T = getImu2WorldTrans(last_frames);
-    latest_state_.R = getRotationMatrix(T);
-    latest_state_.P = getPosition(T);
-  }
 }
 
 void VinsBackendInterface::updateLandmarks(const FrameBundlePtr& frame_bundle)

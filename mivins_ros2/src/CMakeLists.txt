@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(vins)
+project(mivins)
 
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
@@ -29,21 +29,20 @@ set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 #mivins_core
-set(MIVINS_CORE_LIBRARY_URL https://cnbj2m-fds.api.xiaomi.net/bsp-internal/ROS/carpo-camera/mivins/mivins_core.tgz)
-execute_process(
-  COMMAND rm -rf ${CMAKE_SOURCE_DIR}/mivins_core
-)
-execute_process(
-  COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/mivins_core
-  COMMAND wget -q ${MIVINS_CORE_LIBRARY_URL} -P ${CMAKE_SOURCE_DIR}
-)
+# set(MIVINS_CORE_LIBRARY_URL https://cnbj2m-fds.api.xiaomi.net/bsp-internal/ROS/carpo-camera/mivins/mivins_core.tgz)
+# execute_process(
+#   COMMAND rm -rf ${CMAKE_SOURCE_DIR}/mivins_core
+# )
+# execute_process(
+#   COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/mivins_core
+#   COMMAND wget -q ${MIVINS_CORE_LIBRARY_URL} -P ${CMAKE_SOURCE_DIR}
+# )
 
-execute_process(
-  COMMAND tar xzvf ${CMAKE_SOURCE_DIR}/mivins_core.tgz -C ${CMAKE_SOURCE_DIR}
-  #WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty
-)
+# execute_process(
+#   COMMAND tar xzvf ${CMAKE_SOURCE_DIR}/mivins_core.tgz -C ${CMAKE_SOURCE_DIR}
+# )
 
-execute_process(COMMAND rm ${CMAKE_SOURCE_DIR}/mivins_core.tgz)
+# execute_process(COMMAND rm ${CMAKE_SOURCE_DIR}/mivins_core.tgz)
 
 find_package(cyberdog_common REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -112,7 +111,6 @@ target_link_libraries(vins_lib
 )
 
 ament_target_dependencies(vins_lib
-    #mivins_core
     OpenCV
     rclcpp
     tf2_ros
@@ -120,7 +118,6 @@ ament_target_dependencies(vins_lib
     cv_bridge
     std_msgs
     ament_index_cpp
-    #Ceres
     pcl_conversions
     geometry_msgs
     image_transport
@@ -129,7 +126,6 @@ ament_target_dependencies(vins_lib
     Boost
     cyberdog_visions_interfaces
     std_srvs
-    # yaml-cpp
     nav2_util
     protocol
     cyberdog_common
@@ -163,17 +159,12 @@ endif()
 
 ament_export_libraries(vins_lib mivins_core mivins_interface mivins_frontend vins_backend)
 
-install(PROGRAMS 
-    #${CMAKE_CURRENT_SOURCE_DIR}/mivins_core/libs/libmivins_core.so
-    #${CMAKE_CURRENT_SOURCE_DIR}/mivins_core/libs/libvins_backend.so
-    #${CMAKE_CURRENT_SOURCE_DIR}/mivins_core/libs/libmivins_frontend.so
-    #${CMAKE_CURRENT_SOURCE_DIR}/mivins_core/libs/libmivins_interface.so
+install(PROGRAMS
     DESTINATION lib/${PROJECT_NAME}
 )
 
 install(TARGETS mivins_node
   RUNTIME DESTINATION lib/${PROJECT_NAME})
-
 
 install(DIRECTORY
   ${CMAKE_CURRENT_SOURCE_DIR}/launch
@@ -184,10 +175,5 @@ install(DIRECTORY
   ${CMAKE_CURRENT_SOURCE_DIR}/param
   DESTINATION share/${PROJECT_NAME}/
 )
-
-# install(TARGETS mapping
-#  RUNTIME DESTINATION lib/${PROJECT_NAME}
-# )
-
 ament_export_include_directories(include)
 ament_package()

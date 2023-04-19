@@ -26,14 +26,21 @@ int MiVins_StartUp(std::string config_file_, std::string calib_file_);
 
 int MiVins_GetImuStatus();
 
-int MiVins_ImuInput(const double ts,  const Eigen::Vector3d &acc_imu, const Eigen::Vector3d &gyr_imu);
+int MiVins_ImuInput(const double ts, const Eigen::Vector3d &acc_imu, const Eigen::Vector3d &gyr_imu);
 
-int MiVins_ImgInput(const int64_t ts, const std::vector<cv::Mat> &images, const std::map<int, cv::Mat> &depths);
+int MiVins_ImgInput(
+	const int64_t ts, 
+	const std::vector<cv::Mat> &images, 
+	const std::map<int, cv::Mat> &depths);
 
 int MiVins_GetOdomStatus();
 
-int MiVins_OdomInput(const double ts, const Eigen::Quaterniond &orientation, const Eigen::Vector3d &position, 
-                     const Eigen::Vector3d &vel_odom, const Eigen::Vector3d &gyr_odom);
+int MiVins_OdomInput(
+	const double ts, 
+	const Eigen::Quaterniond &orientation, 
+	const Eigen::Vector3d &position, 
+	const Eigen::Vector3d &vel_odom, 
+	const Eigen::Vector3d &gyr_odom);
                      
 bool MiVins_GetAlignedOdom(const double timestamp, Eigen::Matrix4d &odom_pose);
 

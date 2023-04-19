@@ -345,35 +345,13 @@ void FrameManager::setDepth(const int frame_count,
   {
     if(feature_per_ids_.count(feature_id) == 0)
       continue;
-      
+
     int feature_index = ftr_idx_map.at(feature_id);
 
     double inv_depth = x[feature_index][0];
     double estimated_depth = 1.0 / inv_depth;
     auto &feature_per_id = feature_per_ids_[feature_id];
     feature_per_id.estimated_depth = estimated_depth;
-
-    // double depth_error = estimated_depth - prv_estimated_depth;
-    // if(std::abs(depth_error) <= 0.05f 
-    //     && estimated_depth > 0.0f 
-    //     && estimated_depth  < 5.0f)
-    // {
-    //   // feature_per_id.solve_flag = -1;
-    //   ++fix_cnt;
-    // }
-    // std::cout << feature_id << ": estimated_depth: " << estimated_depth << "\n";
-
-    /*
-    if(frame_count == WINDOW_SIZE && solver_flag == SolverFlag::NON_LINEAR)
-    {
-      if(estimated_depth < 0.0f)
-        feature_per_id.solve_flag = 2;
-      else
-        feature_per_id.solve_flag = -1;
-
-      continue;        
-    } 
-    */
 
     if(feature_per_id.solve_flag == -1)
       continue;
@@ -403,7 +381,10 @@ void FrameManager::removeFirstNew(const int frame_count)
     auto &feature_per_frame = feature_per_id.feature_per_frame;
 
     if(obs_frames.empty()) 
+    {
+      feature_per_id.slide_out = true;
       continue;
+    }
 
     const int &end_frame = obs_frames.back();
 
@@ -419,7 +400,6 @@ void FrameManager::removeFirstNew(const int frame_count)
 
     if(obs_frames.empty())
     {
-      // feature_per_ids_.erase(feature_id);
       feature_per_id.slide_out = true;
       continue;
     }
@@ -435,8 +415,9 @@ void FrameManager::removeSecondNew(const int frame_count)
 
   std::lock_guard<std::mutex> lock(ftr_mutex_);
 
-  for(auto &feature_id : feature_ids_)
+  for(size_t lm_idx = 0; lm_idx < feature_ids_.size(); ++lm_idx)
   {
+    const size_t feature_id = feature_ids_[lm_idx];
     if(feature_per_ids_.count(feature_id) == 0)
       continue;
 
@@ -445,24 +426,26 @@ void FrameManager::removeSecondNew(const int frame_count)
     auto &feature_per_frame = feature_per_id.feature_per_frame;
 
     if(obs_frames.empty()) 
+    {
+      feature_per_id.slide_out = true;
       continue;    
+    }
 
     int start_frame = obs_frames.front();
     int end_frame = obs_frames.back();
 
     if(start_frame == frame_count)
     {
-      assert(obs_frames.size() == 1);
-      obs_frames.front() = start_frame - 1;
-      feature_per_frame[obs_frames.front()] = feature_per_frame[start_frame];
-      feature_per_frame.erase(start_frame);
+      feature_per_id.slideOld();
+      // assert(obs_frames.size() == 1);
+      // obs_frames.front() = start_frame - 1;
+      // feature_per_frame[obs_frames.front()] = feature_per_frame[start_frame];
+      // feature_per_frame.erase(start_frame);
     }
     else
     {    
       if(end_frame < marg_frame)
-      {
         continue;
-      }
 
       if(start_frame == marg_frame && end_frame == frame_count)
       {        
@@ -512,12 +495,11 @@ void FrameManager::removeSecondNew(const int frame_count)
       }
 
       if(obs_frames.empty())
-      {
-        feature_per_ids_.erase(feature_id);
-        continue;
-      }
+        feature_per_id.slide_out = true;
     }
   }
+
+  slideOutFeatures();
 }
 
 void FrameManager::removeOld()
@@ -535,7 +517,10 @@ void FrameManager::removeOld()
     auto &feature_per_frame = feature_per_id.feature_per_frame;
 
     if(obs_frames.empty()) 
+    {
+      feature_per_id.slide_out = true;
       continue;
+    }
 
     int start_frame = obs_frames.front();
     if(start_frame != 0)
@@ -575,8 +560,11 @@ void FrameManager::removeBackShiftDepth()
     auto &obs_frames = feature_per_id.obs_frames;
     auto &feature_per_frame = feature_per_id.feature_per_frame;
 
-    if(obs_frames.empty()) 
-      continue;    
+    if(obs_frames.empty())
+    {
+      feature_per_id.slide_out = true;
+      continue;
+    }
 
     if(obs_frames.front() != 0)
     {
@@ -586,7 +574,6 @@ void FrameManager::removeBackShiftDepth()
     {
       if(obs_frames.size() < 2)
       {
-        // feature_per_ids_.erase(feature_id);
         feature_per_id.slide_out = true;
         continue;
       }
@@ -647,19 +634,23 @@ void FrameManager::slideOutFeatures()
 }
 
 void FrameManager::getDepth(const int frame_count, const SolverFlag solver_flag, 
-  const bool opt, std::vector<size_t> &opt_feature_ids, double **para_Feature)
+  const bool opt_process, std::vector<size_t> &opt_feature_ids, 
+  std::map<size_t, size_t> &para_feature_map, double **para_Feature)
 {
-  int feature_index = -1;
+  int feature_index = 0;
+  para_feature_map.clear();
 
-  unsigned int obs_thresh = is_kf_ ? obs_thresh_ : obs_thresh_ + 1;
-  // unsigned int obs_thresh = obs_thresh_;
+  unsigned int obs_thresh = obs_thresh_;
+  // obs_thresh = is_kf_ ? obs_thresh_ : obs_thresh_ + 1;
 
-  if(!opt)
+  if(!opt_process)
   {
     for(auto feature_id : opt_feature_ids)
     {
       double estimated_depth = feature_per_ids_[feature_id].estimated_depth;
-      para_Feature[++feature_index][0] = 1.0 / estimated_depth;
+      para_Feature[feature_index][0] = 1.0 / estimated_depth;
+      para_feature_map.insert(std::make_pair(feature_id, feature_index));
+      ++feature_index;
     }
 
     return;
@@ -670,7 +661,7 @@ void FrameManager::getDepth(const int frame_count, const SolverFlag solver_flag,
   std::vector<std::pair<size_t, size_t>> total_obs;
   for(auto &kv : feature_per_ids_)
   {
-    size_t feature_id = kv.first;
+    const size_t feature_id = kv.first;
     auto &feature_per_id = kv.second;
     size_t obs_cnt = feature_per_id.obs_frames.size();
     
@@ -689,47 +680,22 @@ void FrameManager::getDepth(const int frame_count, const SolverFlag solver_flag,
   {
     for(auto &kv : total_obs)
     {
-      const size_t& feature_id = kv.first;
+      const size_t feature_id = kv.first;
 
       double estimated_depth = feature_per_ids_[feature_id].estimated_depth;
 
-      // if(kf_all_opt_size_ > 0 && (int)opt_feature_ids.size() >= kf_all_opt_size_)
-      //   break;
-
-      para_Feature[++feature_index][0] = 1.0 / estimated_depth;
       opt_feature_ids.emplace_back(feature_id);
+      para_Feature[feature_index][0] = 1.0 / estimated_depth;
+      para_feature_map.insert(std::make_pair(feature_id, feature_index));
+      ++feature_index;
     }
-    // std::cout << "0. opt_feature_ids size: " << opt_feature_ids.size() << "\n";
 
     return;
   }
-
-  /*
-  if(!is_kf_)
-  {
-    for(auto &kv : total_obs)
-    {
-      int opt_size = opt_feature_ids.size();
-      if(nkf_all_opt_size_ > 0 && opt_size >= nkf_all_opt_size_)
-        break;
-
-      const size_t& feature_id = kv.first;
-      if(cur_feature_ids_.count(feature_id) == 0)
-        continue;
-
-      double estimated_depth = feature_per_ids_[feature_id].estimated_depth;
-      if(!isDepthOK(estimated_depth))
-        continue;
-
-      para_Feature[++feature_index][0] = 1.0 / estimated_depth;
-      opt_feature_ids.emplace_back(feature_id);
-    }
-    return;
-  }
-  */
 
   int kf_new_opt_size = kf_new_opt_size_;
   int kf_all_opt_size = kf_all_opt_size_;
+  int nkf_all_opt_size = nkf_all_opt_size_;
 
   getGridObs(frame_count);
 
@@ -741,7 +707,7 @@ void FrameManager::getDepth(const int frame_count, const SolverFlag solver_flag,
       int add_cnt = 0;
       for(auto kv : grid_obs.second)
       {
-        size_t feature_id = kv.first;
+        const size_t feature_id = kv.first;
         size_t obs_cnt = kv.second;
 
         if(obs_cnt < obs_thresh)
@@ -755,8 +721,10 @@ void FrameManager::getDepth(const int frame_count, const SolverFlag solver_flag,
         if(!isDepthOK(estimated_depth))
           continue;
 
-        para_Feature[++feature_index][0] = 1.0 / estimated_depth;
         opt_feature_ids.emplace_back(feature_id);
+        para_Feature[feature_index][0] = 1.0 / estimated_depth;
+        para_feature_map.insert(std::make_pair(feature_id, feature_index));
+        ++feature_index;
 
         ++add_cnt;
 
@@ -767,21 +735,19 @@ void FrameManager::getDepth(const int frame_count, const SolverFlag solver_flag,
           break;
       }
     }
-    // std::cout << "cam id: " << cam_id << "; "
-    //           << "add_cnt: " << add_cnt << "\n";
   }
-  // std::cout << "1. opt_feature_ids size: " << opt_feature_ids.size() << "\n";
 
+  // add features that only can be observed by current frame
   for(auto &kv : total_obs)
   {
     int opt_size = opt_feature_ids.size();
     if(is_kf_ && kf_new_opt_size > 0 && opt_size >= kf_new_opt_size)
       break;
       
-    if(!is_kf_ && nkf_all_opt_size_ > 0 && opt_size >= nkf_all_opt_size_)
+    if(!is_kf_ && nkf_all_opt_size > 0 && opt_size >= nkf_all_opt_size)
       break;
     
-    const size_t& feature_id = kv.first;
+    const size_t feature_id = kv.first;
     if(cur_feature_ids_.count(feature_id) == 0)
       continue;
 
@@ -793,39 +759,13 @@ void FrameManager::getDepth(const int frame_count, const SolverFlag solver_flag,
     if(!isDepthOK(estimated_depth))
       continue;
 
-    para_Feature[++feature_index][0] = 1.0 / estimated_depth;
     opt_feature_ids.emplace_back(feature_id);
+    para_Feature[feature_index][0] = 1.0 / estimated_depth;
+    para_feature_map.insert(std::make_pair(feature_id, feature_index));
+    ++feature_index;
   }
-  // std::cout << "2. opt_feature_ids size: " << opt_feature_ids.size() << "\n";
 
-  if(!is_kf_) return;
-
-  /*
-  for(auto &kv : total_obs)
-  {
-    int opt_size = opt_feature_ids.size();
-    if(kf_all_opt_size > 0 && opt_size >= kf_all_opt_size)
-      break;
-
-    const size_t& feature_id = kv.first;
-    
-    auto &obs_frames = feature_per_ids_[feature_id].obs_frames;
-    if(obs_frames.front() != 0)
-      continue;
-
-    auto iter = std::find(opt_feature_ids.begin(), opt_feature_ids.end(), feature_id);
-    if(iter != opt_feature_ids.end())
-      continue;
-
-    double estimated_depth = feature_per_ids_[feature_id].estimated_depth;
-    if(!isDepthOK(estimated_depth))
-      continue;
-
-    para_Feature[++feature_index][0] = 1.0 / estimated_depth;
-    opt_feature_ids.emplace_back(feature_id);
-  }
-  // std::cout << "3. opt_feature_ids size: " << opt_feature_ids.size() << "\n";
-  */
+  // if(!is_kf_) return;
 
   for(auto &kv : total_obs)
   {
@@ -833,7 +773,7 @@ void FrameManager::getDepth(const int frame_count, const SolverFlag solver_flag,
     if(kf_all_opt_size > 0 && opt_size >= kf_all_opt_size)
       break;
 
-    const size_t& feature_id = kv.first;
+    const size_t feature_id = kv.first;
     
     auto iter = std::find(opt_feature_ids.begin(), opt_feature_ids.end(), feature_id);
     if(iter != opt_feature_ids.end())
@@ -843,10 +783,11 @@ void FrameManager::getDepth(const int frame_count, const SolverFlag solver_flag,
     if(!isDepthOK(estimated_depth))
       continue;
 
-    para_Feature[++feature_index][0] = 1.0 / estimated_depth;
     opt_feature_ids.emplace_back(feature_id);
+    para_Feature[feature_index][0] = 1.0 / estimated_depth;
+    para_feature_map.insert(std::make_pair(feature_id, feature_index));
+    ++feature_index;
   }
-  // std::cout << "4. opt_feature_ids size: " << opt_feature_ids.size() << "\n";
 }
 
 bool FrameManager::isDepthOK(const double estimated_depth)
@@ -1083,7 +1024,7 @@ void FrameManager::addFrameBundle(const int frame_count,
         if(feature_per_ids_.count(feature_id) == 0)
         {
           FeaturePerId feature_per_id(0.0f, 0);
-          feature_per_ids_[feature_id] = feature_per_id;
+          feature_per_ids_.insert(std::make_pair(feature_id, feature_per_id));
         }
 
         feature_per_ids_[feature_id].addObservation(frame_count, 
@@ -1096,7 +1037,8 @@ void FrameManager::addFrameBundle(const int frame_count,
 
     if(verbose && is_kf_)
     {
-      std::cout << "cam: " << cam_idx << "; "             
+      std::cout << "cam: " << cam_idx << "; "
+            << "is kf: " << isKeyframe(frame) << "; "
             << "track_id size: " << frame->track_id_vec_.size() << "; "
             << "feat size: " << feature_size << ", "
             << "new added: " << new_added_num << ", "
@@ -1119,6 +1061,9 @@ void FrameManager::getTrackingState(const int frame_count)
 
   for(auto &feature_id : cur_feature_ids_)
   {
+    if(feature_per_ids_.count(feature_id) == 0)
+      continue;
+
     auto &obs_frames = feature_per_ids_[feature_id].obs_frames;
 
     if(obs_frames.empty())
@@ -1258,7 +1203,6 @@ bool FrameManager::triangulateDepth(
   return false;
 }
 
-// 三角化特征点, 获取其在世界系下的3D坐标
 void FrameManager::triangulatePoint(Eigen::Matrix<double, 3, 4> &Pose0, Eigen::Matrix<double, 3, 4> &Pose1,
             Eigen::Vector2d &point0, Eigen::Vector2d &point1, Eigen::Vector3d &point_3d)
 {
@@ -1359,6 +1303,9 @@ bool FrameManager::initFramePoseByPnP(
 
     for(auto feature_id : cur_frame_obs)
     {
+      if(feature_per_ids_.count(feature_id) == 0)
+        continue;
+
       auto &feature_per_id = feature_per_ids_[feature_id];
       const int &solve_flag = feature_per_id.solve_flag;
       const double &estimated_depth = feature_per_id.estimated_depth;

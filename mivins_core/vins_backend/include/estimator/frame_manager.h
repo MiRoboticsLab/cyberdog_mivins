@@ -192,7 +192,11 @@ public:
       const Eigen::Vector3d &bearing_vector, const Eigen::Vector3d &velocity = Eigen::Vector3d::Zero())
   {
     if(feature_per_frame.count(frame_count) == 0)
-      feature_per_frame[frame_count] = PointInFramebundle(cam_size);
+    {
+      PointInFramebundle pt_in_fb(cam_size);
+      feature_per_frame.insert(std::make_pair(frame_count, pt_in_fb));
+      // feature_per_frame[frame_count] = PointInFramebundle(cam_size);
+    }
       
     feature_per_frame[frame_count].addObservation(cam_id, 
         ftr_idx, pyr_level, pixel, bearing_vector, velocity);
@@ -208,7 +212,11 @@ public:
             const int cam_id, const size_t ftr_idx, const int pyr_level)
   {
     if(feature_per_frame.count(frame_count) == 0)
-      feature_per_frame[frame_count] = PointInFramebundle(cam_size);
+    {
+      PointInFramebundle pt_in_fb(cam_size);
+      feature_per_frame.insert(std::make_pair(frame_count, pt_in_fb));
+      // feature_per_frame[frame_count] = PointInFramebundle(cam_size);
+    }
 
     feature_per_frame[frame_count].addObservation(cam_id, ftr_idx, pyr_level);
     
@@ -248,6 +256,8 @@ class FrameManager
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+  typedef std::shared_ptr<FrameManager> Ptr;
+
   FrameManager(std::vector<StateGroup> *_states,
         Matrix3dVec *_ric, Vector3dVec *_tic, 
         CameraBundlePtr& camera_bundle,
@@ -278,7 +288,8 @@ public:
   void removeOld();
 
   void getDepth(const int frame_count, const SolverFlag solver_flag, const bool opt, 
-                std::vector<size_t> &opt_feature_ids, double **para_Feature);
+                std::vector<size_t> &opt_feature_ids, std::map<size_t, size_t> &para_feature_map, 
+                double **para_Feature);
 
   // void setDepth(const Eigen::VectorXd &x);
 
@@ -429,7 +440,7 @@ public:
   unsigned int obs_thresh_;
 
   std::set<size_t> cur_feature_ids_;
-  std::map<size_t, std::set<size_t>> cur_frame_obs_;
+  std::unordered_map<size_t, std::set<size_t>> cur_frame_obs_;
   
   std::vector<size_t> feature_ids_;
   std::unordered_map<size_t, FeaturePerId> feature_per_ids_;

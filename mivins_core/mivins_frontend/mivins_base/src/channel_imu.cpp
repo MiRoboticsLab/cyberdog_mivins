@@ -720,7 +720,7 @@ namespace mivins
                 LOG(ERROR) << "Did not get IMU measurements";
                 return false;
             }
-            wait_time.resume();
+            //wait_time.resume();
             // wait
             VLOG(50) << "Waiting for imu measurements.";
         }

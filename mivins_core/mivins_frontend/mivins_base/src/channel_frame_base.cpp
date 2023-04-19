@@ -860,7 +860,7 @@ namespace mivins
                     Transformation T_w_b = marged_KF->Get_T_W_B();
                     std::vector<double> pose = Twb2Twbaselink(T_w_b);
                     savekf.precision(16);
-                    savekf << last_frames_->GetMinTimestampSeconds() << " "
+                    savekf << marged_KF->GetMinTimestampSeconds() << " "
                         << pose[0] << " " << pose[1] << " " << pose[2] << " "
                         << pose[3] << " " << pose[4] << " " << pose[5] << " " << pose[6] << std::endl;
 
@@ -1810,7 +1810,12 @@ return true;
         const size_t reprojector_grid_idx, const DetectorPtr &feature_detector)
     {
         const Reprojector &rep = *reprojectors_.at(reprojector_grid_idx);
-        CHECK_EQ(feature_detector->grid_.size(), rep.grid_->size());
+        //CHECK_EQ(feature_detector->grid_.size(), rep.grid_->size());
+        if(feature_detector->grid_.size()!=rep.grid_->size())
+        {
+            std::cout<<"check setOccupiedCells:"<<feature_detector->grid_.size()<<" vs "<<rep.grid_->size()<<std::endl;
+            return;
+        }
         feature_detector->grid_.occupancy_ = rep.grid_->occupancy_;
         if (rep.fixed_landmark_grid_)
         {

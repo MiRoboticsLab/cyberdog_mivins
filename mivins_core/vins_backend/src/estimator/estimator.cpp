@@ -966,15 +966,7 @@ void Estimator::vector2double(const bool opt)
   }
 
   frame_manager_->getDepth(frame_count_, solver_flag_, opt, 
-              opt_feature_ids_, para_InvDepth_);
-
-  size_t feature_index = 0;
-  para_feature_map_.clear();
-  for(auto &feature_id : opt_feature_ids_)
-  {
-    para_feature_map_[feature_id] = feature_index;
-    ++feature_index;
-  }
+      opt_feature_ids_, para_feature_map_, para_InvDepth_);
 
   if(use_imu_)
     para_Td_imu_[0] = td_imu_;
@@ -1377,8 +1369,6 @@ void Estimator::optimization()
 
 void Estimator::margInThread()
 {
-  marg_done_ = false;
-
   marginalization();
 
   std::vector<size_t> outliers_idxs;
@@ -2609,6 +2599,7 @@ void Estimator::processFrameBundle(const FrameBundlePtr& new_frames)
     reTriangulate();
     updateFrameBundles();
 
+    marg_done_ = false;
     marg_thread_ = std::thread(&Estimator::margInThread, this);
     marg_thread_.detach();
   }

@@ -1,19 +1,16 @@
-# - Try to find Eigen3 lib
+# Copyright (c) 2023 Beijing Xiaomi Mobile Software Co., Ltd. All rights reserved.
 #
-# This module supports requiring a minimum version, e.g. you can do
-#   find_package(Eigen3 3.1.2)
-# to require version 3.1.2 or newer of Eigen3.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# Once done this will define
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#  EIGEN3_FOUND - system has eigen lib with correct version
-#  EIGEN3_INCLUDE_DIR - the eigen include directory
-#  EIGEN3_VERSION - eigen version
-
-# Copyright (c) 2006, 2007 Montel Laurent, <montel@kde.org>
-# Copyright (c) 2008, 2009 Gael Guennebaud, <g.gael@free.fr>
-# Copyright (c) 2009 Benoit Jacob <jacob.benoit.1@gmail.com>
-# Redistribution and use is allowed according to the terms of the 2-clause BSD license.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 if(NOT Eigen3_FIND_VERSION)
   if(NOT Eigen3_FIND_VERSION_MAJOR)

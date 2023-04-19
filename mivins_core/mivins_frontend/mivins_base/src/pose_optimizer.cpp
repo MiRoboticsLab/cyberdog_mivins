@@ -147,23 +147,24 @@ namespace mivins
                 const int scale = (1 << frame->level_vec_(i));
                 double unwhitened_error, chi2_error;
                 double measurement_sigma = measurement_sigma_ * scale;
+                bool res =false;
                 if (isEdgelet(frame->type_vec_[i]))
                 {
                     // Edgelets should have less weight than corners.
                     constexpr double kEdgeletSigmaExtraFactor = 2.0;
                     measurement_sigma *= kEdgeletSigmaExtraFactor;
                     if (err_type_ == ErrorType::kUnitPlane)
-                        pose_optimizer_utils::CalculateEdgeletResidualUnitPlane(
+                        res = pose_optimizer_utils::CalculateEdgeletResidualUnitPlane(
                             frame->f_vec_.col(i), xyz_world, frame->grad_vec_.col(i),
                             T_imu_world, T_cam_imu, measurement_sigma, loss_function_,
                             &unwhitened_error, &chi2_error, H, g);
                     else if (err_type_ == ErrorType::kImagePlane)
-                        pose_optimizer_utils::CalculateEdgeletResidualImagePlane(
+                        res = pose_optimizer_utils::CalculateEdgeletResidualImagePlane(
                             frame->px_vec_.col(i), xyz_world, frame->grad_vec_.col(i),
                             T_imu_world, T_cam_imu, *frame->cam(), measurement_sigma,
                             loss_function_, &unwhitened_error, &chi2_error, H, g);
                     else if (err_type_ == ErrorType::kBearingVectorDiff)
-                        pose_optimizer_utils::CalculateEdgeletResidualBearingVectorDiff(
+                        res = pose_optimizer_utils::CalculateEdgeletResidualBearingVectorDiff(
                             frame->px_vec_.col(i), frame->f_vec_.col(i), xyz_world, frame->grad_vec_.col(i),
                             T_imu_world, T_cam_imu, *frame->cam(), measurement_sigma,
                             loss_function_, &unwhitened_error, &chi2_error, H, g);
@@ -171,28 +172,31 @@ namespace mivins
                 else
                 {
                     if (err_type_ == ErrorType::kUnitPlane)
-                        pose_optimizer_utils::CalculateFeatureResidualUnitPlane(
+                        res = pose_optimizer_utils::CalculateFeatureResidualUnitPlane(
                             frame->f_vec_.col(i), xyz_world, T_imu_world, T_cam_imu,
                             measurement_sigma, loss_function_,
                             &unwhitened_error, &chi2_error, H, g);
                     else if (err_type_ == ErrorType::kImagePlane)
                     {
-                        pose_optimizer_utils::CalculateFeatureResidualImagePlane(
+                        res = pose_optimizer_utils::CalculateFeatureResidualImagePlane(
                             frame->px_vec_.col(i), xyz_world, T_imu_world, T_cam_imu,
                             *frame->cam(), measurement_sigma, loss_function_,
                             &unwhitened_error, &chi2_error, H, g);
                     }
                     else if (err_type_ == ErrorType::kBearingVectorDiff)
                     {
-                        pose_optimizer_utils::CalculateFeatureResidualBearingVectorDiff(
+                        res = pose_optimizer_utils::CalculateFeatureResidualBearingVectorDiff(
                             frame->f_vec_.col(i), xyz_world, T_imu_world, T_cam_imu,
                             measurement_sigma, loss_function_,
                             &unwhitened_error, &chi2_error, H, g);
                     }
                 }
+
+                if(!res)
+                    continue;
                 if (unwhitened_errors)
                 {
-                    CHECK_GE(unwhitened_error, 0.0);
+                    //CHECK_GE(unwhitened_error, 0.0);
                     unwhitened_errors->push_back(unwhitened_error / scale);
                 }
                 chi2_error_sum += chi2_error;
@@ -346,7 +350,7 @@ namespace mivins
     namespace pose_optimizer_utils
     {
 
-        void CalculateFeatureResidualUnitPlane(
+        bool CalculateFeatureResidualUnitPlane(
             const Eigen::Ref<const BearingVector> &f,
             const Position &xyz_in_world,
             const Transformation &T_imu_world,
@@ -365,6 +369,8 @@ namespace mivins
             Eigen::Vector2d e = vk::project2(f) - vk::project2(xyz_in_cam);
             if (unwhitened_error)
                 *unwhitened_error = e.norm();
+            if(isnan(*unwhitened_error))
+                return false;    
 
             // Whiten error: R*e, where R is the square root of information matrix (1/sigma).
             double R = 1.0 / measurement_sigma;
@@ -385,9 +391,10 @@ namespace mivins
                 H->noalias() += J_proj.transpose() * J_proj * weight;
                 g->noalias() -= J_proj.transpose() * e * weight;
             }
+            return true;
         }
 
-        void CalculateFeatureResidualImagePlane(
+        bool CalculateFeatureResidualImagePlane(
             const Eigen::Ref<const Keypoint> &px,
             const Position &xyz_in_world,
             const Transformation &T_imu_world,
@@ -410,6 +417,8 @@ namespace mivins
             Eigen::Vector2d e = px - px_est;
             if (unwhitened_error)
                 *unwhitened_error = e.norm();
+            if(isnan(*unwhitened_error))
+                return false;    
 
             // Whiten error: R*e, where R is the square root of information matrix (1/sigma).
             double R = 1.0 / measurement_sigma;
@@ -431,9 +440,10 @@ namespace mivins
                 H->noalias() += J_proj.transpose() * J_proj * weight;
                 g->noalias() -= J_proj.transpose() * e * weight;
             }
+            return true;
         }
 
-        void CalculateFeatureResidualBearingVectorDiff(
+        bool CalculateFeatureResidualBearingVectorDiff(
             const Eigen::Ref<const BearingVector> &f,
             const Position &xyz_in_world,
             const Transformation &T_imu_world,
@@ -452,7 +462,8 @@ namespace mivins
             Vector3d e = f - xyz_in_cam.normalized();
             if (unwhitened_error)
                 *unwhitened_error = e.norm();
-
+            if(isnan(*unwhitened_error))
+                return false;
             // Whitened error.
             double R = 1.0 / measurement_sigma;
             e *= R;
@@ -473,9 +484,10 @@ namespace mivins
                 H->noalias() += J_proj.transpose() * J_proj * weight;
                 g->noalias() -= J_proj.transpose() * e * weight;
             }
+            return true;
         }
 
-        void CalculateEdgeletResidualUnitPlane(
+        bool CalculateEdgeletResidualUnitPlane(
             const Eigen::Ref<const BearingVector> &f,
             const Position &xyz_in_world,
             const Eigen::Ref<const GradientVector> &grad,
@@ -495,6 +507,8 @@ namespace mivins
             double e = grad.dot(vk::project2(f) - vk::project2(xyz_in_cam));
             if (unwhitened_error)
                 *unwhitened_error = std::abs(e);
+            if(isnan(*unwhitened_error))
+                return false;  
 
             // Whiten error.
             double R = 1.0 / measurement_sigma;
@@ -516,9 +530,10 @@ namespace mivins
                 H->noalias() += J * J.transpose() * weight;
                 g->noalias() -= J * e * weight;
             }
+            return true;
         }
 
-        void CalculateEdgeletResidualImagePlane(
+        bool CalculateEdgeletResidualImagePlane(
             const Eigen::Ref<const Keypoint> &px,
             const Position &xyz_in_world,
             const Eigen::Ref<const GradientVector> &grad,
@@ -542,7 +557,9 @@ namespace mivins
             double e = grad.dot(px - px_est);
             if (unwhitened_error)
                 *unwhitened_error = std::abs(e);
-
+            if(isnan(*unwhitened_error))
+                return false;
+            
             // Whiten error: R*e, where R is the square root of information matrix (1/sigma).
             double R = 1.0 / measurement_sigma;
             e *= R;
@@ -563,12 +580,13 @@ namespace mivins
                 H->noalias() += J * J.transpose() * weight;
                 g->noalias() -= J * e * weight;
             }
+            return true;
         }
 
         // NOTE: current implementation basically scales the residual on
         //       the image plane to the unit sphere. This involves the calculation
         //       of projection functions and Jacobians, which is not efficient.
-        void CalculateEdgeletResidualBearingVectorDiff(
+        bool CalculateEdgeletResidualBearingVectorDiff(
             const Eigen::Ref<const Keypoint> &px,
             const Eigen::Ref<const BearingVector> &f,
             const Position &xyz_in_world,
@@ -600,7 +618,8 @@ namespace mivins
             double e = e_img * scale_ratio;
             if (unwhitened_error)
                 *unwhitened_error = std::abs(e);
-
+            if(isnan(*unwhitened_error))
+                return false;
             // Whiten error: R*e, where R is the square root of information matrix (1/sigma).
             double R = 1.0 / measurement_sigma;
             e *= R;
@@ -633,6 +652,7 @@ namespace mivins
                 H->noalias() += J * J.transpose() * weight;
                 g->noalias() -= J * e * weight;
             }
+            return true;
         }
 
     } // namespace pose_optimizer_utils

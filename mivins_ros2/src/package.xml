@@ -1,14 +1,12 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>vins</name>
+  <name>mivins</name>
   <version>1.0.0</version>
   <description>
       MIVINS
   </description>
-  <author email="pgeneva@udel.edu">Patrick Geneva</author>
-  <author email="keck@udel.edu">Kevin Eckenhoff</author>
-  <maintainer email="pgeneva@udel.edu">Patrick Geneva</maintainer>
+  <maintainer email="jiakui@xiaomi.com">Jia Kui</maintainer>
   <license>GNU General Public License v3.0</license>
   
   <build_depend>cyberdog_common</build_depend>

@@ -53,7 +53,7 @@ namespace mivins
             size_t max_epi_search_steps = 100; //!< max number of evaluations along epipolar line
             bool subpix_refinement = true;     //!< do gauss newton feature patch alignment after epipolar search
             bool epi_search_edgelet_filtering = true;
-            bool scan_on_unit_sphere = true;
+            bool scan_on_unit_sphere = false;//true;
             double epi_search_edgelet_max_angle = 0.7;
             bool verbose = false;
             bool use_affine_warp_ = true;

@@ -119,7 +119,7 @@ namespace mivins
     namespace pose_optimizer_utils
     {
 
-        void CalculateFeatureResidualUnitPlane(
+        bool CalculateFeatureResidualUnitPlane(
             const Eigen::Ref<const BearingVector> &f,
             const Position &xyz_in_world,
             const Transformation &T_imu_world,
@@ -131,7 +131,7 @@ namespace mivins
             PoseOptimizer::HessianMatrix *H,
             PoseOptimizer::GradientVector *g);
 
-        void CalculateFeatureResidualImagePlane(
+        bool CalculateFeatureResidualImagePlane(
             const Eigen::Ref<const Keypoint> &px,
             const Position &xyz_in_world,
             const Transformation &T_imu_world,
@@ -144,7 +144,7 @@ namespace mivins
             PoseOptimizer::HessianMatrix *H,
             PoseOptimizer::GradientVector *g);
 
-        void CalculateFeatureResidualBearingVectorDiff(
+        bool CalculateFeatureResidualBearingVectorDiff(
             const Eigen::Ref<const BearingVector> &f,
             const Position &xyz_in_world,
             const Transformation &T_imu_world,
@@ -156,7 +156,7 @@ namespace mivins
             PoseOptimizer::HessianMatrix *H,
             PoseOptimizer::GradientVector *g);
 
-        void CalculateEdgeletResidualUnitPlane(
+        bool CalculateEdgeletResidualUnitPlane(
             const Eigen::Ref<const BearingVector> &f,
             const Position &xyz_in_world,
             const Eigen::Ref<const GradientVector> &grad,
@@ -169,7 +169,7 @@ namespace mivins
             PoseOptimizer::HessianMatrix *H,
             PoseOptimizer::GradientVector *g);
 
-        void CalculateEdgeletResidualImagePlane(
+        bool CalculateEdgeletResidualImagePlane(
             const Eigen::Ref<const Keypoint> &px,
             const Position &xyz_in_world,
             const Eigen::Ref<const GradientVector> &grad,
@@ -183,7 +183,7 @@ namespace mivins
             PoseOptimizer::HessianMatrix *H,
             PoseOptimizer::GradientVector *g);
 
-        void CalculateEdgeletResidualBearingVectorDiff(
+        bool CalculateEdgeletResidualBearingVectorDiff(
             const Eigen::Ref<const Keypoint> &px,
             const Eigen::Ref<const BearingVector> &f,
             const Position &xyz_in_world,
